@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOC Sentinel – Security Operations Center Simulator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ===== MOBILE OVERLAY ===== -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <span class="logo-icon">⬡</span>
+      <div class="logo-text">
+        <span class="logo-title">SOC Sentinel</span>
+        <span class="logo-sub">Security Operations Simulator</span>
+      </div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <span class="nav-label">OPERATIONS</span>
+    <a href="#" class="nav-item active" data-section="overview">
+      <span class="nav-icon">◈</span><span>Overview</span>
+    </a>
+    <a href="#" class="nav-item" data-section="threats">
+      <span class="nav-icon">◉</span><span>Threat Monitoring</span>
+      <span class="nav-badge" id="threatBadge">0</span>
+    </a>
+    <a href="#" class="nav-item" data-section="incidents">
+      <span class="nav-icon">◎</span><span>Incidents</span>
+      <span class="nav-badge" id="incidentBadge">0</span>
+    </a>
+    <a href="#" class="nav-item" data-section="investigation">
+      <span class="nav-icon">◇</span><span>Investigation</span>
+    </a>
+
+    <span class="nav-label">RESOURCES</span>
+    <a href="#" class="nav-item" data-section="playbooks">
+      <span class="nav-icon">◆</span><span>Playbooks</span>
+    </a>
+    <a href="#" class="nav-item" data-section="analytics">
+      <span class="nav-icon">▣</span><span>Analytics</span>
+    </a>
+    <a href="#" class="nav-item" data-section="learning">
+      <span class="nav-icon">◑</span><span>Learning Center</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sim-badge">⚠ SIMULATED DATA ONLY</div>
+  </div>
+</aside>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="main-wrapper">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <button class="menu-toggle" id="menuToggle">☰</button>
+    <div class="topbar-left">
+      <span class="page-title" id="pageTitle">Dashboard Overview</span>
+    </div>
+    <div class="topbar-right">
+      <div class="threat-level" id="topbarThreatLevel">
+        <span class="dot dot-red pulse"></span>
+        <span>Threat Level: <strong>HIGH</strong></span>
+      </div>
+      <div class="time-display" id="timeDisplay">--:--:--</div>
+    </div>
+  </header>
+
+  <!-- ===== SECTION: OVERVIEW ===== -->
+  <section class="section active" id="sec-overview">
+    <div class="section-header">
+      <h2>Dashboard Overview</h2>
+      <p class="section-sub">⚠ All data is fictional and for educational simulation purposes only.</p>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-blue">
+        <div class="kpi-icon">◈</div>
+        <div class="kpi-info">
+          <span class="kpi-label">Total Alerts</span>
+          <span class="kpi-value" id="kpiTotal">0</span>
+          <span class="kpi-delta delta-up">↑ 12% today</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-red">
+        <div class="kpi-icon">⚠</div>
+        <div class="kpi-info">
+          <span class="kpi-label">Critical Threats</span>
+          <span class="kpi-value" id="kpiCritical">0</span>
+          <span class="kpi-delta delta-up">↑ 3 new</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-green">
+        <div class="kpi-icon">✓</div>
+        <div class="kpi-info">
+          <span class="kpi-label">Resolved Today</span>
+          <span class="kpi-value" id="kpiResolved">0</span>
+          <span class="kpi-delta delta-down">↓ 5% vs avg</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-yellow">
+        <div class="kpi-icon">⏱</div>
+        <div class="kpi-info">
+          <span class="kpi-label">Avg Response Time</span>
+          <span class="kpi-value" id="kpiResponse">--</span>
+          <span class="kpi-delta delta-down">↓ 8% improved</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mini Charts Row -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <span class="chart-card-title">Threat Categories</span>
+        </div>
+        <canvas id="chartCategories" width="400" height="220"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <span class="chart-card-title">Severity Distribution</span>
+        </div>
+        <canvas id="chartSeverity" width="400" height="220"></canvas>
+      </div>
+      <div class="chart-card chart-card-full">
+        <div class="chart-card-header">
+          <span class="chart-card-title">Incident Trends (Last 7 Days)</span>
+        </div>
+        <canvas id="chartTrends" width="800" height="220"></canvas>
+      </div>
+    </div>
+
+    <!-- Recent Alerts Table -->
+    <div class="table-card">
+      <div class="table-card-header">
+        <span class="chart-card-title">Recent Alerts</span>
+        <a href="#" class="view-all-link" data-section="threats">View All →</a>
+      </div>
+      <div id="overviewAlertList" class="overview-alert-list"></div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION: THREAT MONITORING ===== -->
+  <section class="section" id="sec-threats">
+    <div class="section-header">
+      <h2>Threat Monitoring</h2>
+      <p class="section-sub">⚠ Simulated alert feed — fictional data for training purposes.</p>
+    </div>
+
+    <div class="toolbar">
+      <input type="text" class="search-input" id="alertSearch" placeholder="🔍 Search alerts by keyword, IP, or type…" />
+      <div class="filter-group">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="Critical">Critical</button>
+        <button class="filter-btn" data-filter="High">High</button>
+        <button class="filter-btn" data-filter="Medium">Medium</button>
+        <button class="filter-btn" data-filter="Low">Low</button>
+      </div>
+    </div>
+
+    <div id="alertList" class="alert-list"></div>
+  </section>
+
+  <!-- ===== SECTION: INCIDENTS ===== -->
+  <section class="section" id="sec-incidents">
+    <div class="section-header">
+      <h2>Incident Management</h2>
+      <p class="section-sub">⚠ Simulated incidents — for educational use only.</p>
+    </div>
+    <div id="incidentList" class="incident-list"></div>
+  </section>
+
+  <!-- ===== SECTION: INVESTIGATION ===== -->
+  <section class="section" id="sec-investigation">
+    <div class="section-header">
+      <h2>Incident Investigation Missions</h2>
+      <p class="section-sub">⚠ Fictional training scenarios — choose the best defensive action.</p>
+    </div>
+    <div class="mission-score-bar">
+      <span>Score: <strong id="missionScore">0</strong> pts</span>
+      <span>Completed: <strong id="missionCompleted">0</strong> / <strong id="missionTotal">0</strong></span>
+    </div>
+    <div id="missionList" class="mission-list"></div>
+  </section>
+
+  <!-- ===== SECTION: PLAYBOOKS ===== -->
+  <section class="section" id="sec-playbooks">
+    <div class="section-header">
+      <h2>Incident Response Playbooks</h2>
+      <p class="section-sub">Standard procedures for handling common security incidents.</p>
+    </div>
+    <div id="playbookList" class="playbook-list"></div>
+  </section>
+
+  <!-- ===== SECTION: ANALYTICS ===== -->
+  <section class="section" id="sec-analytics">
+    <div class="section-header">
+      <h2>Analytics & Reporting</h2>
+      <p class="section-sub">⚠ Charts generated from simulated demo data.</p>
+    </div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-card-header"><span class="chart-card-title">Attack Vectors</span></div>
+        <canvas id="chartVectors" width="400" height="260"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-header"><span class="chart-card-title">Alert Volume by Hour</span></div>
+        <canvas id="chartHourly" width="400" height="260"></canvas>
+      </div>
+    </div>
+    <div class="charts-row">
+      <div class="chart-card chart-card-full">
+        <div class="chart-card-header"><span class="chart-card-title">Weekly Incident Resolution Rate</span></div>
+        <canvas id="chartResolution" width="800" height="240"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION: LEARNING CENTER ===== -->
+  <section class="section" id="sec-learning">
+    <div class="section-header">
+      <h2>Cybersecurity Learning Center</h2>
+      <p class="section-sub">Educational resources for aspiring SOC analysts.</p>
+    </div>
+    <div id="learningList" class="learning-list"></div>
+  </section>
+
+</div><!-- end .main-wrapper -->
+
+<!-- ===== MODAL: Alert Detail ===== -->
+<div class="modal-overlay" id="alertModal">
+  <div class="modal">
+    <button class="modal-close" id="alertModalClose">✕</button>
+    <div id="alertModalContent"></div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Mission ===== -->
+<div class="modal-overlay" id="missionModal">
+  <div class="modal modal-wide">
+    <button class="modal-close" id="missionModalClose">✕</button>
+    <div id="missionModalContent"></div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Playbook ===== -->
+<div class="modal-overlay" id="playbookModal">
+  <div class="modal modal-wide">
+    <button class="modal-close" id="playbookModalClose">✕</button>
+    <div id="playbookModalContent"></div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Learning ===== -->
+<div class="modal-overlay" id="learningModal">
+  <div class="modal modal-wide">
+    <button class="modal-close" id="learningModalClose">✕</button>
+    <div id="learningModalContent"></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
